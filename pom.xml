@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.3.1</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>ai.jobbeacon</groupId>
+	<artifactId>jobbeacon-user-registration-svc</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>jobbeacon-user-registration-svc</name>
+	<description>User registration service </description>
+
+	<organization>
+		<name>jobbeacon.ai</name>
+		<url>https://jobbeacon.ai</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://github/mckesson/ai-jobbeacon-user-registration-svc/blob/main/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<developerConnection>scm:git:https://github/mckesson/ai-jobbeacon-user-registration-svc</developerConnection>
+	</scm>
+
+	<developers>
+		<developer>
+			<name>Andriy Kandzyuba</name>
+			<email>andrey.kandzuba@gmail.com</email>
+			<organization>jobbeacon.ai</organization>
+			<organizationUrl>https://jobbeacon.ai</organizationUrl>
+		</developer>
+	</developers>
+
+	<properties>
+		<java.version>21</java.version>
+		<springdoc-openapi.version>2.5.0</springdoc-openapi.version>
+		<httpclient5.version>5.3</httpclient5.version>
+		<rest-assured.version>5.4.0</rest-assured.version>
+		<maven-surefire-plugin.version>3.3.0</maven-surefire-plugin.version>
+		<openapi-generator-maven-plugin.version>7.6.0</openapi-generator-maven-plugin.version>
+		<build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
+		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+		<maven-failsafe-plugin.version>3.3.0</maven-failsafe-plugin.version>
+		<maven-release-plugin.version>3.0.1</maven-release-plugin.version>
+		<maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
+		<exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+		<jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
+		<jacoco.minimum.line.coverage>0.00</jacoco.minimum.line.coverage>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc-openapi.version}</version>
+		</dependency>
+
+		<!-- Spring Boot -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- HTTP Client 5-->
+		<dependency>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>${httpclient5.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Rest Assured -->
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>${rest-assured.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<compilerArgs>
+						<arg>--enable-preview</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>
+						@{argLine}
+						--add-opens java.base/java.lang=ALL-UNNAMED
+						--add-opens java.base/java.time=ALL-UNNAMED
+						--add-opens java.base/java.time.format=ALL-UNNAMED
+						--add-opens java.base/java.time.temporal=ALL-UNNAMED
+						--add-opens java.base/java.util=ALL-UNNAMED
+						-XX:+EnableDynamicAgentLoading -Xshare:off
+						--enable-preview
+					</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>${openapi-generator-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<skipValidateSpec>false</skipValidateSpec>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/yaml/api.yaml</inputSpec>
+							<packageName>${project.groupId}</packageName>
+							<apiPackage>${project.groupId}.api</apiPackage>
+							<modelPackage>${project.groupId}.model</modelPackage>
+							<generatorName>spring</generatorName>
+							<generateApiTests>true</generateApiTests>
+							<generateModelTests>true</generateModelTests>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<configOptions>
+								<additionalModelTypeAnnotations>@ai.jobbeacon.annotations.Generated</additionalModelTypeAnnotations>
+								<useSpringBoot3>true</useSpringBoot3>
+								<reactive>false</reactive>
+								<openApiNullable>false</openApiNullable>
+								<interfaceOnly>true</interfaceOnly>
+								<useJakartaEe>false</useJakartaEe>
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${build-helper-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/src/main/java/</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources-plugin.version}</version>
+				<configuration>
+					<delimiters>
+						<delimiter>@</delimiter>
+						<useDefaultDelimiters>false</useDefaultDelimiters>
+					</delimiters>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven-failsafe-plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<argLine>
+								@{argLine}
+								--add-opens java.base/java.lang=ALL-UNNAMED
+								--add-opens java.base/java.time=ALL-UNNAMED
+								--add-opens java.base/java.time.format=ALL-UNNAMED
+								--add-opens java.base/java.time.temporal=ALL-UNNAMED
+								--add-opens java.base/java.util=ALL-UNNAMED
+								-XX:+EnableDynamicAgentLoading -Xshare:off
+								--enable-preview
+							</argLine>
+							<includes>
+								<include>**/*IT.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>${maven-release-plugin.version}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>${maven-deploy-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>${exec-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>docker-build</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>docker</executable>
+							<arguments>
+								<argument>build</argument>
+								<argument>--build-arg=APPLICATION_NAME=${project.artifactId}</argument>
+								<argument>--build-arg=APPLICATION_VERSION=${project.version}</argument>
+								<argument>--build-arg=ACTIVE_PROFILE=default,mysql</argument>
+								<argument>-t</argument>
+								<argument>${project.groupId}/${project.artifactId}:${project.version}</argument>
+								<argument>-t</argument>
+								<argument>${project.groupId}/${project.artifactId}:latest</argument>
+								<argument>.</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>default-prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>check-coverage</id>
+						<phase>test</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>COMPLEXITY</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>${jacoco.minimum.line.coverage}</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>application*.properties</include>
+					<include>logback*.yaml</include>
+					<include>db/migration/*.sql</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>${nexusSnapshotsRepository}</url>
+		</snapshotRepository>
+		<repository>
+			<id>nexus-releases</id>
+			<url>${nexusReleasesRepository}</url>
+		</repository>
+	</distributionManagement>
+
+</project>
