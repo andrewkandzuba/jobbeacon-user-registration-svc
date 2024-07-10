@@ -16,7 +16,7 @@ jobs:
         - name: Set up JDK 21
           uses: actions/setup-java@v4
           with:
-            distribution: 'tenurim'
+            distribution: 'temurin'
             java-version: '11'
             cache: 'maven'
             cache-dependency-path: 'pom.xml'
