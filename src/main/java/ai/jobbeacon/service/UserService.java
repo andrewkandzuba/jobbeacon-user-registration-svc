@@ -66,7 +66,7 @@ public class UserService {
             throw new UserNotFoundException(String.format("User %s not found", user.getUsername()));
         }
 
-        userEntity.setEmail(user.getEmail());
+        // Fields of username and email should not be updated
         userEntity.setFirstName(user.getFirstName());
         userEntity.setLastName(user.getLastName());
         userEntity.setPhone(user.getPhone());
