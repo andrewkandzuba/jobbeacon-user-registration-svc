@@ -28,6 +28,10 @@ public class UserService {
         userEntity.setZip(user.getZip());
         userEntity.setCountry(user.getCountry());
 
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            throw new UserAlreadyExistsException(String.format("User %s already exists", user.getUsername()));
+        }
+
         var createdUser = userRepository.save(userEntity);
 
         return createdUser.getUsername();

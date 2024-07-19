@@ -49,7 +49,49 @@ class UserControllerTest {
         userEntity.setPhone("111-111-1111");
         userEntity.setStreet("testStreet");
         userEntity.setCity("testCity");
-        userEntity.setState("testState");
+        userEntity.setState("TT");
+        userEntity.setZip("12345");
+        userEntity.setCountry("testCountry");
+
+        Mockito.when(mockUserRepository.save(Mockito.any(UserEntity.class))).thenReturn(userEntity);
+
+        var user = new User(
+                userEntity.getUsername(),
+                userEntity.getEmail(),
+                userEntity.getFirstName(),
+                userEntity.getLastName(),
+                userEntity.getPhone(),
+                userEntity.getStreet(),
+                userEntity.getCity(),
+                userEntity.getState(),
+                userEntity.getZip(),
+                userEntity.getCountry()
+        );
+
+        String userJson = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userJson))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location",
+                        Matchers.containsString(String.format("/users/%s", userEntity.getUsername()))));
+    }
+
+    @Test
+    void attemptToCreateDuplicateUser() throws Exception {
+        var userEntity = new UserEntity();
+
+        userEntity.setId(1000L);
+        userEntity.setUsername("testUser");
+        userEntity.setEmail("testEmail@mail.com");
+        userEntity.setFirstName("testFirstName");
+        userEntity.setLastName("testLastName");
+        userEntity.setPhone("111-111-1111");
+        userEntity.setStreet("testStreet");
+        userEntity.setCity("testCity");
+        userEntity.setState("TT");
         userEntity.setZip("12345");
         userEntity.setCountry("testCountry");
 
@@ -188,7 +230,7 @@ class UserControllerTest {
         userEntity.setPhone("111-111-1111");
         userEntity.setStreet("testStreet");
         userEntity.setCity("testCity");
-        userEntity.setState("testState");
+        userEntity.setState("TT");
         userEntity.setZip("12345");
         userEntity.setCountry("testCountry");
 
@@ -229,7 +271,7 @@ class UserControllerTest {
         userEntity.setPhone("111-111-1111");
         userEntity.setStreet("testStreet");
         userEntity.setCity("testCity");
-        userEntity.setState("testState");
+        userEntity.setState("TT");
         userEntity.setZip("12345");
         userEntity.setCountry("testCountry");
 
