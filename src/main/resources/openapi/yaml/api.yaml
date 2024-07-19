@@ -13,17 +13,26 @@ info:
     name: Apache 2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
 servers:
-  - url: '{protocol}:/api/v1'
+  - url: '{protocol}://{environment}.server.com:{port}/api/{version}'
     variables:
       protocol:
-        enum:
-          - http
-          - https
+        enum: [http, https]
         default: https
+      environment:
+        enum: [dev, test, prod]
+        default: dev
+      port:
+        enum:
+          - "8443"
+          - "443"
+        default: "8443"
+      version:
+        default: v1
 paths:
   /users:
     post:
       summary: Register a new user
+      operationId: createUser
       requestBody:
         required: true
         content:
@@ -44,6 +53,7 @@ paths:
   /users/{username}:
     get:
       summary: Retrieve a user by username
+      operationId: findUser
       parameters:
         - name: username
           in: path
@@ -61,6 +71,7 @@ paths:
           description: User not found
     put:
       summary: Update a user
+      operationId: updateUser
       parameters:
         - name: username
           in: path
@@ -88,6 +99,7 @@ paths:
           description: Internal server error
     delete:
       summary: Delete a user
+      operationId: deleteUser
       parameters:
         - name: username
           in: path
@@ -108,23 +120,45 @@ components:
       properties:
         username:
           type: string
-        password:
-          type: string
-          format: password
-          writeOnly: true
-        firstName:
-          type: string
-        lastName:
-          type: string
+          example: lopez.paulette123
         email:
           type: string
           format: email
-        mailingAddress:
+          example: lopez.paulette123@mail.com
+        firstName:
           type: string
+          example: Lopez
+        lastName:
+          type: string
+          example: Paulette
+        phone:
+          type: string
+          example: 123-456-7890
+        street:
+          type: string
+          example: '123 Main St'
+        city:
+          type: string
+          example: New York
+        state:
+          type: string
+          minLength: 2
+          maxLength: 2
+          example: NY
+        zip:
+          type: string
+          example: 10001
+        country:
+          type: string
+          example: USA
       required:
         - username
-        - password
+        - email
         - firstName
         - lastName
-        - email
-        - mailingAddress
+        - phone
+        - street
+        - city
+        - state
+        - zip
+        - country
